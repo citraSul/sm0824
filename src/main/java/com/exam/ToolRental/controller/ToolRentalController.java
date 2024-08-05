@@ -23,6 +23,14 @@ public class ToolRentalController {
     @Autowired
     private ToolRentalService toolRentalService;
 
+    /**
+     *
+     * @param toolCode the code of the tool to be entered.
+     * @param rentalDays  the number of the days the tool will be rented.
+     * @param discountPercent the discount percentage to be applied.
+     * @param checkoutDate the date when the tool is checked out.
+     * @return the rent agreement I make it string based on the assignment instruction.
+     */
     @GetMapping("/checkout")
     public ResponseEntity<String> checkout(
             @RequestParam("toolCode") String toolCode,

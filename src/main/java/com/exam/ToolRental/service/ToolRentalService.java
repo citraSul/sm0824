@@ -1,8 +1,11 @@
 package com.exam.ToolRental.service;
 
 
+import com.exam.ToolRental.controller.ToolRentalController;
 import com.exam.ToolRental.model.RentalAgreement;
 import com.exam.ToolRental.model.Tool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,25 +19,41 @@ import java.util.Map;
 
 @Service
 public class ToolRentalService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ToolRentalService.class);
     private static final Map<String, Tool> toolInventory = new HashMap<>();
 
     static {
+        //Initialize the tools with predefined data
         toolInventory.put("CHNS", new Tool("CHNS", "Chainsaw", "Stihl", new BigDecimal("1.49"), true, false, true));
         toolInventory.put("LADW", new Tool("LADW", "Ladder", "Werner", new BigDecimal("1.99"), true, true, false));
         toolInventory.put("JAKD", new Tool("JAKD", "Jackhammer", "DeWalt", new BigDecimal("2.99"), true, false, false));
         toolInventory.put("JAKR", new Tool("JAKR", "Jackhammer", "Ridgid", new BigDecimal("2.99"), true, false, false));
     }
 
+    /**
+     * Handles  the checkout process and calculate the rental agreement details.
+     *
+     * @param toolCode The code of the tool to be rented.
+     * @param rentalDays The number of the days the tool will be rented.
+     * @param discountPercent the discount percentage to be applied.
+     * @param checkoutDate the date when the tool is checked out.
+     * @return RentalAgreement object containing the details of the rental agreement.
+     * @throws  IllegalArgumentException if rental days or percentage discount are invalid.
+     */
     public RentalAgreement checkout(String toolCode, int rentalDays, int discountPercent, LocalDate checkoutDate) {
         if (rentalDays < 1) {
+            logger.error("Invalid rental days: {} .",rentalDays);
             throw new IllegalArgumentException("Rental day count must be 1 or greater.");
         }
         if (discountPercent < 0 || discountPercent > 100) {
+            logger.error("Invalid discount percent: {}. Must be between 0 and 100 :",discountPercent);
             throw new IllegalArgumentException("Discount percent must be between 0 and 100.");
         }
 
         Tool tool = toolInventory.get(toolCode);
         if (tool == null) {
+            logger.error("Invalid tool code: {}",toolCode);
             throw new IllegalArgumentException("Invalid tool code.");
         }
 
